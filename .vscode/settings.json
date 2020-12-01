@@ -1,5 +1,8 @@
 {
   "rust-analyzer.diagnostics.enable": false,
   "rust-analyzer.updates.channel": "nightly",
-  "debug.allowBreakpointsEverywhere": true
+  "debug.allowBreakpointsEverywhere": true,
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true
 }
