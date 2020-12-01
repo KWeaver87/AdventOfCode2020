@@ -1,0 +1,5 @@
+{
+  "rust-analyzer.diagnostics.enable": false,
+  "rust-analyzer.updates.channel": "nightly",
+  "debug.allowBreakpointsEverywhere": true
+}
