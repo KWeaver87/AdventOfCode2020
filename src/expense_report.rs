@@ -11,7 +11,7 @@ fn multiply_2020_from_two(report: &Vec<usize>) -> usize {
     panic!("Could not find 2020.");
 }
 
-/// Find three entries that sum to 2020 and then multiply those two numbers together
+/// Find three entries that sum to 2020 and then multiply those three numbers together
 #[allow(dead_code)]
 fn multiply_2020_from_three(report: &Vec<usize>) -> usize {
     let length = report.len() - 1;
