@@ -50,7 +50,7 @@ mod tests {
         let actual = multiply_2020_from_two(report);
         println!(
             "{}{}",
-            "Product of 2020 entries (2): ".green().bold(),
+            "Product of two 2020 entries: ".green().bold(),
             actual
         );
 
@@ -71,7 +71,7 @@ mod tests {
         let actual = multiply_2020_from_three(report);
         println!(
             "{}{}",
-            "Product of 2020 entries (3): ".green().bold(),
+            "Product of three 2020 entries: ".green().bold(),
             actual
         );
 
