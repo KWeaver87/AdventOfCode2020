@@ -1,3 +1,4 @@
+/// Finds two entries that sum to 2020 and then multiply those two numbers together
 #[allow(dead_code)]
 fn multiply_2020(report: Vec<usize>) -> usize {
     let length = report.len() - 1;
