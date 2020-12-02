@@ -22,6 +22,7 @@ fn multiply_2020(report: Vec<usize>) -> usize {
 #[cfg(test)]
 mod tests {
     use crate::input_utils::load_as_vec_usize;
+    use colored::Colorize;
 
     use super::*;
 
@@ -34,7 +35,7 @@ mod tests {
     #[test]
     fn run_input() {
         let report = load_as_vec_usize("day1-1");
-        println!("Product of 2020 entries: {}", multiply_2020(report));
+        println!("{}{}", "Product of 2020 entries: ".green().bold(), multiply_2020(report));
 
         assert!(true);
     }
