@@ -5,6 +5,7 @@ use std::{
 };
 
 // inputName should be formatted as "dayX-X"
+#[allow(dead_code)]
 pub fn load_as_vec_usize(input_name: &str) -> Vec<usize> {
     let err_msg = "failure at ";
     let inputs: Vec<&str> = input_name.split_terminator("-").collect();

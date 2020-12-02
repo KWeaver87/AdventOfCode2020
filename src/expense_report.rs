@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 fn multiply_2020(report: Vec<usize>) -> usize {
     let length = report.len() - 1;
     let mut x = std::usize::MIN;
