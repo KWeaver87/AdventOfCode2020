@@ -1,23 +1,14 @@
-/// Finds two entries that sum to 2020 and then multiply those two numbers together
+/// Find two entries that sum to 2020 and then multiply those two numbers together
 #[allow(dead_code)]
-fn multiply_2020(report: Vec<usize>) -> usize {
-    let length = report.len() - 1;
-    let mut x = std::usize::MIN;
-    for a_index in 0..=length {
-        let a = report[a_index];
-        for b_index in a_index + 1..=length {
-            let b = report[b_index];
-            if a + b == 2020 {
-                x = a * b;
-                break;
-            }
-        }
-        if x > 0 {
-            break;
+fn multiply_2020_from_two(report: &Vec<usize>) -> usize {
+    for a in report {
+        let found = report.into_iter().find(|&b| a + b == 2020);
+        if found.is_some(){
+            return a * found.unwrap();
         }
     }
 
-    x
+    panic!("Could not find 2020.");
 }
 
 #[cfg(test)]
@@ -28,16 +19,19 @@ mod tests {
     use super::*;
 
     #[test]
-    fn given_example() {
-        let test_report = vec![1721, 979, 366, 299, 675, 1456];
-        assert_eq!(multiply_2020(test_report), 514579);
+    fn given_example_for_two() {
+        let test_report = &vec![1721, 979, 366, 299, 675, 1456];
+        assert_eq!(multiply_2020_from_two(test_report), 514579);
     }
 
     #[test]
-    fn run_input() {
-        let report = load_as_vec_usize("day1-1");
-        println!("{}{}", "Product of 2020 entries: ".green().bold(), multiply_2020(report));
+    fn run_input_for_two() {
+        let expected = 712075;
 
-        assert!(true);
+        let report = &load_as_vec_usize("day1-1");
+        let actual = multiply_2020_from_two(report);
+        println!("{}{}", "Product of 2020 entries (2): ".green().bold(), actual);
+
+        assert_eq!(actual, expected);
     }
 }
