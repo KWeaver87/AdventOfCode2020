@@ -8,7 +8,7 @@ struct PasswordPolicy<'a> {
 
 /// Count the number of passwords that match their policy
 #[allow(dead_code)]
-fn count_valid_passwords(passwords: &Vec<PasswordPolicy>) -> usize {
+fn count_valid_passwords(passwords: Vec<PasswordPolicy>) -> usize {
     passwords
         .iter()
         .filter(|pw| {
@@ -24,7 +24,7 @@ fn count_valid_passwords(passwords: &Vec<PasswordPolicy>) -> usize {
 fn parse_password_policy(input: &str) -> PasswordPolicy {
     let elements: Vec<&str> = input.split_ascii_whitespace().collect();
 
-    let min_max: Vec<&str>  = elements[0].split('-').collect();
+    let min_max: Vec<&str> = elements[0].split('-').collect();
     let min: usize = min_max[0].parse().unwrap();
     let max: usize = min_max[1].parse().unwrap();
     // Just get first char
@@ -40,8 +40,8 @@ fn parse_password_policy(input: &str) -> PasswordPolicy {
 
 #[cfg(test)]
 mod tests {
-    // use crate::input_utils::load_as_vec_usize;
-    // use colored::Colorize;
+    use crate::input_utils::load_as_vec_string;
+    use colored::Colorize;
 
     use super::*;
 
@@ -60,7 +60,7 @@ mod tests {
 
     #[test]
     fn given_example() {
-        let test_passwords = &vec![
+        let test_passwords = vec![
             PasswordPolicy {
                 required: 'a',
                 min: 1,
@@ -81,5 +81,20 @@ mod tests {
             },
         ];
         assert_eq!(count_valid_passwords(test_passwords), 2);
+    }
+
+    #[test]
+    fn run_input() {
+        let expected = 556;
+
+        let strings = load_as_vec_string("day2-1");
+        let passwords = strings
+            .iter()
+            .map(|p| parse_password_policy(p.as_str()))
+            .collect();
+        let actual = count_valid_passwords(passwords);
+        println!("{}{}", "Number of valid passwords: ".green().bold(), actual);
+
+        assert_eq!(actual, expected);
     }
 }
