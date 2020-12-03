@@ -4,5 +4,6 @@
   "debug.allowBreakpointsEverywhere": true,
   "files.eol": "\n",
   "files.insertFinalNewline": true,
-  "files.trimTrailingWhitespace": true
+  "files.trimTrailingWhitespace": true,
+  "editor.detectIndentation": false
 }
