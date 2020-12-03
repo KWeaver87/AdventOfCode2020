@@ -103,7 +103,7 @@ static FIRST_TOBOGGAN: TobogganPath = TobogganPath {
 
 #[cfg(test)]
 mod tests {
-    // use crate::input_utils::load_as_vec_string;
+    use crate::input_utils::load_as_vec_string;
     // use colored::Colorize;
 
     use super::*;
@@ -130,5 +130,24 @@ mod tests {
             count_trees_encountered(map, FIRST_TOBOGGAN, FIRST_TOBOGGAN.start_pos, 0),
             7
         );
+    }
+
+    #[test]
+    fn run_input() {
+        let expected = 195;
+
+        let strings = load_as_vec_string("day3");
+        let map = strings
+            .iter()
+            .map(|r| build_geology_row(r.as_str()))
+            .collect();
+        let actual = count_trees_encountered(map, FIRST_TOBOGGAN, FIRST_TOBOGGAN.start_pos, 0);
+        println!(
+            "{}{}",
+            "Number of trees encountered: ".green().bold(),
+            actual
+        );
+
+        assert_eq!(actual, expected);
     }
 }
