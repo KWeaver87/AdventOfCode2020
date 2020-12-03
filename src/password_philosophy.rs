@@ -1,4 +1,4 @@
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 struct PasswordPolicy<'a> {
     required: char,
     digit1: usize,
@@ -49,6 +49,28 @@ fn parse_password_policy(input: &str) -> PasswordPolicy {
     }
 }
 
+#[allow(dead_code)]
+static TEST_PASSWORDS: &[PasswordPolicy; 3] = &[
+    PasswordPolicy {
+        required: 'a',
+        digit1: 1,
+        digit2: 3,
+        pass: "abcde",
+    },
+    PasswordPolicy {
+        required: 'b',
+        digit1: 1,
+        digit2: 3,
+        pass: "cdefg",
+    },
+    PasswordPolicy {
+        required: 'c',
+        digit1: 2,
+        digit2: 9,
+        pass: "ccccccccc",
+    },
+];
+
 #[cfg(test)]
 mod tests {
     use crate::input_utils::load_as_vec_string;
@@ -71,27 +93,7 @@ mod tests {
 
     #[test]
     fn given_example_min_max() {
-        let test_passwords = vec![
-            PasswordPolicy {
-                required: 'a',
-                digit1: 1,
-                digit2: 3,
-                pass: "abcde",
-            },
-            PasswordPolicy {
-                required: 'b',
-                digit1: 1,
-                digit2: 3,
-                pass: "cdefg",
-            },
-            PasswordPolicy {
-                required: 'c',
-                digit1: 2,
-                digit2: 9,
-                pass: "ccccccccc",
-            },
-        ];
-        assert_eq!(count_valid_passwords_min_max(test_passwords), 2);
+        assert_eq!(count_valid_passwords_min_max(TEST_PASSWORDS.to_vec()), 2);
     }
 
     #[test]
@@ -115,27 +117,7 @@ mod tests {
 
     #[test]
     fn given_example_position() {
-        let test_passwords = vec![
-            PasswordPolicy {
-                required: 'a',
-                digit1: 1,
-                digit2: 3,
-                pass: "abcde",
-            },
-            PasswordPolicy {
-                required: 'b',
-                digit1: 1,
-                digit2: 3,
-                pass: "cdefg",
-            },
-            PasswordPolicy {
-                required: 'c',
-                digit1: 2,
-                digit2: 9,
-                pass: "ccccccccc",
-            },
-        ];
-        assert_eq!(count_valid_passwords_position(test_passwords), 1);
+        assert_eq!(count_valid_passwords_position(TEST_PASSWORDS.to_vec()), 1);
     }
 
     #[test]
