@@ -7,8 +7,8 @@ struct GeologyRow {
 }
 
 impl GeologyRow {
-    /// The map can repeat to infinity, so this `get` will loop back to the
-    /// original array when the index exceeds the length.
+    /// The map can repeat to infinity on the x coord, so this `get` will loop
+    /// back to the original array when the index exceeds the length.
     fn get(&self, index: usize) -> usize {
         if index >= self.row.len() {
             self.row[index % self.row.len()]
@@ -60,19 +60,23 @@ fn count_trees_encountered(
         count_trees_encountered(
             map,
             tob_path,
-            // Add right movement to x coord, and add down movement to y coord
+            // Add down movement to x coord, and add right movement to y coord
             (pos.0 + tob_path.1, pos.1 + tob_path.0),
             trees + tree_here,
         )
     }
 }
 
+/// Gives the product of the number of trees encountered along each toboggan path
 #[allow(dead_code)]
 fn product_trees_encountered_multiple_toboggans(
     map: &Vec<GeologyRow>,
     tob_paths: Vec<(usize, usize)>,
 ) -> usize {
-    tob_paths.iter().map(|t| count_trees_encountered_start(map, *t)).product()
+    tob_paths
+        .iter()
+        .map(|t| count_trees_encountered_start(map, *t))
+        .product()
 }
 
 #[allow(dead_code)]
@@ -92,10 +96,8 @@ static TEST_GEOLOGY: &[&str] = &[
 
 #[cfg(test)]
 mod tests {
-    use crate::input_utils::load_as_vec_string;
-    // use colored::Colorize;
-
     use super::*;
+    use crate::input_utils::load_as_vec_string;
 
     #[test]
     fn test_row_indexing() {
