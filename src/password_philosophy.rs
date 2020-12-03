@@ -102,7 +102,7 @@ mod tests {
     fn run_input_min_max() {
         let expected = 556;
 
-        let strings = load_as_vec_string("day2-1");
+        let strings = load_as_vec_string("day2");
         let passwords = strings
             .iter()
             .map(|p| parse_password_policy(p.as_str()))
@@ -146,7 +146,7 @@ mod tests {
     fn run_input_position() {
         let expected = 605;
 
-        let strings = load_as_vec_string("day2-1");
+        let strings = load_as_vec_string("day2");
         let passwords = strings
             .iter()
             .map(|p| parse_password_policy(p.as_str()))

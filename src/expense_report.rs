@@ -46,7 +46,7 @@ mod tests {
     fn run_input_for_two() {
         let expected = 712075;
 
-        let report = &load_as_vec_usize("day1-1");
+        let report = &load_as_vec_usize("day1");
         let actual = multiply_2020_from_two(report);
         println!(
             "{}{}",
@@ -67,7 +67,7 @@ mod tests {
     fn run_input_for_three() {
         let expected = 145245270;
 
-        let report = &load_as_vec_usize("day1-1");
+        let report = &load_as_vec_usize("day1");
         let actual = multiply_2020_from_three(report);
         println!(
             "{}{}",
