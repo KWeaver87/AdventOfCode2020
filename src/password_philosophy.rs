@@ -38,17 +38,13 @@ fn count_valid_passwords_position(passwords: Vec<PasswordPolicy>) -> usize {
 #[allow(dead_code)]
 fn parse_password_policy(input: &str) -> PasswordPolicy {
     let elements: Vec<&str> = input.split_ascii_whitespace().collect();
-
-    let min_max: Vec<&str> = elements[0].split('-').collect();
-    let min: usize = min_max[0].parse().unwrap();
-    let max: usize = min_max[1].parse().unwrap();
-    // Just get first char
-    let ch = elements[1].chars().next().unwrap();
+    let digits: Vec<&str> = elements[0].split('-').collect();
 
     PasswordPolicy {
-        required: ch,
-        digit1: min,
-        digit2: max,
+        // Just get first char
+        required: elements[1].chars().next().unwrap(),
+        digit1: digits[0].parse().unwrap(),
+        digit2: digits[1].parse().unwrap(),
         pass: elements[2],
     }
 }
