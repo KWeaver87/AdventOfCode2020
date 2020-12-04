@@ -1,5 +1,5 @@
-# AdventOfCode2020
-My attempt at https://adventofcode.com/2020/
+# Advent of Code 2020
+Trying to learn Rust by working through [Advent of Code 2020](https://adventofcode.com/2020/). First time I've done an AoC.
 
 ## Input file naming
 
