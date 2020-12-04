@@ -1,5 +1,4 @@
 /// Find two entries that sum to 2020 and then multiply those two numbers together
-#[allow(dead_code)]
 fn multiply_2020_from_two(report: &Vec<usize>) -> usize {
     for a in report {
         let maybe_b = report.into_iter().find(|&b| a + b == 2020);
@@ -12,7 +11,6 @@ fn multiply_2020_from_two(report: &Vec<usize>) -> usize {
 }
 
 /// Find three entries that sum to 2020 and then multiply those three numbers together
-#[allow(dead_code)]
 fn multiply_2020_from_three(report: &Vec<usize>) -> usize {
     let length = report.len() - 1;
     for a_index in 0..=length {

@@ -8,7 +8,6 @@ struct PasswordPolicy<'a> {
 
 /// Count the number of passwords that match policy, using `digit1` as minimum
 /// amount of `required` and `digit2` as maximum allowed `required`.
-#[allow(dead_code)]
 fn count_valid_passwords_min_max(passwords: Vec<PasswordPolicy>) -> usize {
     passwords
         .iter()
@@ -22,7 +21,6 @@ fn count_valid_passwords_min_max(passwords: Vec<PasswordPolicy>) -> usize {
 /// Count the number of passwords that match policy, using `digit1` as first
 /// position to check and `digit2` as second position to check. Only one
 /// position may contain `required`.
-#[allow(dead_code)]
 fn count_valid_passwords_position(passwords: Vec<PasswordPolicy>) -> usize {
     passwords
         .iter()
@@ -35,7 +33,6 @@ fn count_valid_passwords_position(passwords: Vec<PasswordPolicy>) -> usize {
 
 /// Parse a specifically formatted string into PasswordPolicy.
 /// The string's format must be (`[DIGIT1]-[DIGIT2] [REQUIRED_SINGLE_CHARACTER]: [PASSWORD]`), e.g. `1-3 a: abcde`
-#[allow(dead_code)]
 fn parse_password_policy(input: &str) -> PasswordPolicy {
     let elements: Vec<&str> = input.split_ascii_whitespace().collect();
     let digits: Vec<&str> = elements[0].split('-').collect();
@@ -49,7 +46,6 @@ fn parse_password_policy(input: &str) -> PasswordPolicy {
     }
 }
 
-#[allow(dead_code)]
 static TEST_PASSWORDS: &[PasswordPolicy; 3] = &[
     PasswordPolicy {
         required: 'a',

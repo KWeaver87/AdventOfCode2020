@@ -18,14 +18,12 @@ impl GeologyRow {
     }
 }
 
-#[allow(dead_code)]
 fn build_geology_row(input: &str) -> GeologyRow {
     GeologyRow {
         row: input.chars().map(|c| parse_geology_type(c)).collect(),
     }
 }
 
-#[allow(dead_code)]
 fn parse_geology_type(ch: char) -> usize {
     match ch {
         '.' => 0,
@@ -40,13 +38,11 @@ fn parse_geology_type(ch: char) -> usize {
 
 /// Starting at position (0, 0), count the number of trees encountered in
 /// given map along given toboggan path (right, down)
-#[allow(dead_code)]
 fn count_trees_encountered_start(map: &Vec<GeologyRow>, tob_path: (usize, usize)) -> usize {
     count_trees_encountered(map, tob_path, (0, 0), 0)
 }
 
 /// Recursively count the trees
-#[allow(dead_code)]
 fn count_trees_encountered(
     map: &Vec<GeologyRow>,
     tob_path: (usize, usize),
@@ -68,7 +64,6 @@ fn count_trees_encountered(
 }
 
 /// Gives the product of the number of trees encountered along each toboggan path
-#[allow(dead_code)]
 fn product_trees_encountered_multiple_toboggans(
     map: &Vec<GeologyRow>,
     tob_paths: Vec<(usize, usize)>,
@@ -79,7 +74,6 @@ fn product_trees_encountered_multiple_toboggans(
         .product()
 }
 
-#[allow(dead_code)]
 static TEST_GEOLOGY: &[&str] = &[
     "..##.......",
     "#...#...#..",
