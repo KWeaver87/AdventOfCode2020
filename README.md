@@ -14,3 +14,4 @@ Files should be saved in `inputs\` folder, using a `dayX` format. Loading functi
 - [Day 1: Report Repair](src/report_repair.rs)
 - [Day 2: Password Philosophy](src/password_philosophy.rs)
 - [Day 3: Toboggan Trajectory](src/toboggan_trajectory.rs)
+- [Day 4: Passport Processing](src/passport_processing.rs)
