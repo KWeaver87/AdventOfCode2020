@@ -1,3 +1,7 @@
+fn calc_seat_max_id(input: Vec<String>) -> usize {
+    input.iter().map(|s| calc_seat_id(s)).max().unwrap()
+}
+
 fn calc_seat_id(input: &str) -> usize {
     let rows: Vec<u8> = (0..128).collect();
     let columns: Vec<u8> = (0..8).collect();
@@ -30,8 +34,8 @@ fn split_input(input: String) -> (String, String) {
 
 #[cfg(test)]
 mod tests {
-    // use crate::input_utils::load_as_vec_string;
-    // use colored::Colorize;
+    use crate::input_utils::load_as_vec_string;
+    use colored::Colorize;
     use super::*;
 
     #[test]
@@ -62,6 +66,17 @@ mod tests {
     fn calc_seat_example_4() {
         let expected = 820;
         let actual = calc_seat_id("BBFFBBFRLL");
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn calc_seat_max_from_input() {
+        let expected = 930;
+
+        let seats = load_as_vec_string("day5");
+        let actual = calc_seat_max_id(seats);
+        println!("{}{}", "Max seat ID: ".green().bold(), actual);
 
         assert_eq!(actual, expected);
     }
