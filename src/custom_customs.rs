@@ -1,5 +1,22 @@
+use std::collections::HashSet;
+
 fn sum_group_questions(questions: String) -> usize {
-    0
+    let groups = split_questions_by_group(questions);
+
+    let counts: Vec<HashSet<char>> = groups
+        .iter()
+        .map(|group| {
+            group.chars()
+                .filter(|c| *c >= 'a' && *c <= 'z')
+                .collect::<HashSet<char>>()
+        })
+        .collect();
+
+    counts.iter().map(|set| set.len()).sum()
+}
+
+fn split_questions_by_group(questions: String) -> Vec<String> {
+    questions.split("\n\n").map(|s| s.to_string()).collect()
 }
 
 #[cfg(test)]
@@ -10,7 +27,7 @@ mod tests {
 
     #[test]
     fn count_group_questions_example() {
-        let expected = 0;
+        let expected = 11;
         let actual = sum_group_questions(
             "abc
 
@@ -35,7 +52,7 @@ b"
 
     #[test]
     fn count_group_questions_from_input() {
-        let expected = 0;
+        let expected = 6809;
 
         let questions = load_as_string("day6");
         let actual = sum_group_questions(questions);
