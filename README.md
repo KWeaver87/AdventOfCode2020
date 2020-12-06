@@ -16,3 +16,4 @@ Files should be saved in `inputs\` folder, using a `dayX` format. Loading functi
 - [Day 3: Toboggan Trajectory](src/toboggan_trajectory.rs)
 - [Day 4: Passport Processing](src/passport_processing.rs)
 - [Day 5: Binary Boarding](src/binary_boarding.rs)
+- [Day 6: Custom Customs](src/custom_customs.rs)
