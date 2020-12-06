@@ -57,10 +57,10 @@ fn split_input(input: String) -> (String, String) {
     let finder: &[_] = &['L', 'R'];
     let split_index = input.find(finder).unwrap();
 
-    let fb = input[0..split_index].to_string();
-    let lr = input[split_index..].to_string();
+    let f_b = input[0..split_index].to_string();
+    let l_r = input[split_index..].to_string();
 
-    (fb, lr)
+    (f_b, l_r)
 }
 
 #[cfg(test)]
