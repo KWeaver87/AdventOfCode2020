@@ -1,26 +1,33 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 fn count_bags_hold_shiny_gold(rules: Vec<String>) -> usize {
     let parsed_rules = parse_rules(rules);
 
-    count_bags_that_hold("shiny gold".to_string(), &parsed_rules)
+    find_bags_that_hold("shiny gold".to_string(), &parsed_rules).len()
 }
 
-fn count_bags_that_hold(
+fn find_bags_that_hold(
     desired_bag: String,
     rules: &HashMap<String, HashMap<String, usize>>,
-) -> usize {
+) -> HashSet<String> {
     let bags_containing: Vec<String> = rules
         .iter()
         .filter(|(_, v)| v.contains_key(&desired_bag))
         .map(|(k, _)| k.to_owned())
         .collect();
 
-    bags_containing.len()
-        + bags_containing
-            .iter()
-            .map(|b| count_bags_that_hold(b.to_owned(), &rules))
-            .count()
+    bags_containing
+        .iter()
+        .fold(bags_containing.clone(), |a, bag| {
+            find_bags_that_hold(bag.to_owned(), rules)
+                .iter()
+                .chain(a.iter())
+                .map(|s| s.to_owned())
+                .collect()
+        })
+        .iter()
+        .map(|s| s.to_owned())
+        .collect()
 }
 
 fn parse_rules(rules: Vec<String>) -> HashMap<String, HashMap<String, usize>> {
@@ -87,7 +94,7 @@ mod tests {
 
     #[test]
     fn count_bags_from_input() {
-        let expected = 0;
+        let expected = 246;
 
         let rules = load_as_vec_string("day7");
         let actual = count_bags_hold_shiny_gold(rules);
