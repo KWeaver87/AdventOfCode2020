@@ -97,7 +97,7 @@ mod tests {
 
     #[test]
     fn sum_group_questions_everyone_from_input() {
-        let expected = 0;
+        let expected = 3394;
 
         let questions = load_as_string("day6");
         let actual = sum_group_questions_everyone(questions);
