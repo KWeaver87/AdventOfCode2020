@@ -1,51 +1,74 @@
-use std::collections::HashSet;
-
-struct ProgramRunner {
-    instructions: Vec<(String, i32)>,
+struct ProgramTracker {
     instruction_index: i32,
     accumulator: i32,
-    seen_instructions: HashSet<usize>,
+    seen_instructions: Vec<usize>,
+    is_infinite_loop: bool,
 }
 
-impl ProgramRunner {
-    fn new(instructions: Vec<String>) -> ProgramRunner {
-        let parsed_instructions = instructions
-            .into_iter()
-            .map(|l| parse_instruction_line(l.to_string()))
-            .collect();
+fn calc_acc_before_repeat(program: Vec<String>) -> i32 {
+    let parsed_instructions = program
+        .into_iter()
+        .map(|l| parse_instruction_line(l.to_string()))
+        .collect();
 
-        ProgramRunner {
-            instructions: parsed_instructions,
-            instruction_index: 0,
-            accumulator: 0,
-            seen_instructions: HashSet::new(),
-        }
-    }
+    let init_tracker = ProgramTracker {
+        accumulator: 0,
+        instruction_index: 0,
+        is_infinite_loop: false,
+        seen_instructions: vec![],
+    };
 
-    fn run_instructions(&mut self) {
-        self.run_instruction(&self.instructions[0].clone());
-    }
+    let run = run_instruction(parsed_instructions, init_tracker);
 
-    fn run_instruction(&mut self, instruction: &(String, i32)) {
-        if !self.seen_instructions.insert(self.instruction_index as usize) {
-            return;
-        }
-        let op = instruction.0.as_str();
-        match op {
-            "acc" => {
-                self.accumulator += instruction.1;
-                self.instruction_index += 1;
-            }
-            "jmp" => {
-                self.instruction_index += instruction.1;
-            }
-            "nop" => {
-                self.instruction_index += 1;
-            }
-            _ => panic!(format!("Invalid operation: {}", op)),
+    run.accumulator
+}
+
+fn run_instruction(instructions: Vec<(String, i32)>, tracker: ProgramTracker) -> ProgramTracker {
+    let index = tracker.instruction_index as usize;
+    if tracker.seen_instructions.contains(&(index)) {
+        return ProgramTracker {
+            is_infinite_loop: true,
+            ..tracker
         };
+    }
 
-        self.run_instruction(&self.instructions[self.instruction_index as usize].clone());
+    let next_run = determine_next_run(&instructions, tracker);
+
+    run_instruction(instructions, next_run)
+}
+
+fn determine_next_run(
+    instructions: &Vec<(String, i32)>,
+    prev_run: ProgramTracker,
+) -> ProgramTracker {
+    let index = prev_run.instruction_index as usize;
+    let instruction = instructions[index].clone();
+    let op = instruction.0.as_str();
+    let next_seen = prev_run
+        .seen_instructions
+        .iter()
+        .chain([index].iter())
+        .map(|i| *i)
+        .collect();
+
+    match op {
+        "acc" => ProgramTracker {
+            instruction_index: prev_run.instruction_index + 1,
+            accumulator: prev_run.accumulator + instruction.1,
+            seen_instructions: next_seen,
+            ..prev_run
+        },
+        "jmp" => ProgramTracker {
+            instruction_index: prev_run.instruction_index + instruction.1,
+            seen_instructions: next_seen,
+            ..prev_run
+        },
+        "nop" => ProgramTracker {
+            instruction_index: prev_run.instruction_index + 1,
+            seen_instructions: next_seen,
+            ..prev_run
+        },
+        _ => panic!(format!("Invalid operation: {}", op)),
     }
 }
 
@@ -55,14 +78,6 @@ fn parse_instruction_line(line: String) -> (String, i32) {
     let arg: i32 = splits.get(1).unwrap().parse().unwrap();
 
     (op, arg)
-}
-
-fn calc_acc_before_repeat(program: Vec<String>) -> i32 {
-    let mut prog = ProgramRunner::new(program);
-
-    prog.run_instructions();
-
-    prog.accumulator
 }
 
 static EXAMPLE_PROGRAM: &str = "nop +0
@@ -84,7 +99,8 @@ mod tests {
     #[test]
     fn calc_acc_before_repeat_example_1() {
         let expected = 5;
-        let actual = calc_acc_before_repeat(EXAMPLE_PROGRAM.lines().map(|l| l.to_string()).collect());
+        let actual =
+            calc_acc_before_repeat(EXAMPLE_PROGRAM.lines().map(|l| l.to_string()).collect());
 
         assert_eq!(actual, expected);
     }
@@ -95,7 +111,11 @@ mod tests {
 
         let program = load_as_vec_string("day8");
         let actual = calc_acc_before_repeat(program);
-        println!("{}{}", "Accumulator before an instruction repeats: ".green().bold(), actual);
+        println!(
+            "{}{}",
+            "Accumulator before an instruction repeats: ".green().bold(),
+            actual
+        );
 
         assert_eq!(actual, expected);
     }
