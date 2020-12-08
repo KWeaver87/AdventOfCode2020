@@ -30,6 +30,25 @@ fn find_bags_that_hold(
         .collect()
 }
 
+/// Part2
+fn total_bags_inside_shiny_gold(rules: Vec<String>) -> usize {
+    let parsed_rules = parse_rules(rules);
+
+    total_bags_inside("shiny gold".to_string(), &parsed_rules)
+}
+
+fn total_bags_inside(
+    desired_bag: String,
+    rules: &HashMap<String, HashMap<String, usize>>,
+) -> usize {
+    let bags_inside: &HashMap<String, usize> = rules.get_key_value(&desired_bag).unwrap().1;
+
+    bags_inside
+        .iter()
+        .map(|(b, n)| n + n * total_bags_inside(b.to_owned(), rules))
+        .sum()
+}
+
 fn parse_rules(rules: Vec<String>) -> HashMap<String, HashMap<String, usize>> {
     rules
         .iter()
@@ -92,6 +111,7 @@ mod tests {
         assert_eq!(actual, expected);
     }
 
+    /// Part1
     #[test]
     fn count_bags_from_input() {
         let expected = 246;
@@ -103,6 +123,49 @@ mod tests {
             "Number of bags that can hold a shiny gold bag: "
                 .green()
                 .bold(),
+            actual
+        );
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn total_bags_example_1() {
+        let expected = 32;
+        let rules = EXAMPLE_RULES.lines().map(|l| l.to_string()).collect();
+        let actual = total_bags_inside_shiny_gold(rules);
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn total_bags_example_2() {
+        let expected = 126;
+        let rules = "shiny gold bags contain 2 dark red bags.
+dark red bags contain 2 dark orange bags.
+dark orange bags contain 2 dark yellow bags.
+dark yellow bags contain 2 dark green bags.
+dark green bags contain 2 dark blue bags.
+dark blue bags contain 2 dark violet bags.
+dark violet bags contain no other bags."
+            .lines()
+            .map(|l| l.to_string())
+            .collect();
+        let actual = total_bags_inside_shiny_gold(rules);
+
+        assert_eq!(actual, expected);
+    }
+
+    /// Part2
+    #[test]
+    fn total_bags_from_input() {
+        let expected = 2976;
+
+        let rules = load_as_vec_string("day7");
+        let actual = total_bags_inside_shiny_gold(rules);
+        println!(
+            "{}{}",
+            "Number of bags inside shiny gold bag: ".green().bold(),
             actual
         );
 
