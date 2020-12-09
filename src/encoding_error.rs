@@ -1,4 +1,4 @@
-fn find_preamble_rule_invalid(xmas: Vec<usize>, preamble_len: usize) -> usize {
+fn find_preamble_rule_invalid(xmas: &Vec<usize>, preamble_len: usize) -> usize {
     xmas.iter()
         .enumerate()
         .skip(preamble_len)
@@ -19,9 +19,33 @@ fn is_valid_by_preamble_rule(xmas: &Vec<usize>, i: usize, preamble_len: usize) -
 /// Finds the first number that is invalid according to the preamble rule.
 /// Then searches for a seqeunce of numbers that sums up to the invalid number.
 /// Returns the sum of the min and max values from that sequence.
-fn find_preamble_rule_sequence(xmas: Vec<usize>, preamble_len: usize) -> usize {
+fn find_preamble_rule_sequence(xmas: &Vec<usize>, preamble_len: usize) -> usize {
+    let num = find_preamble_rule_invalid(xmas, preamble_len);
+    let num_i = xmas.iter().position(|&n| n == num).unwrap();
+    let mut seq: Vec<usize> = vec![];
 
-    0
+    for i in 0..xmas.len() {
+        if i == num_i || xmas[i] >= num {
+            continue;
+        }
+        for j in i..xmas.len() {
+            if j == num_i || xmas[j] >= num {
+                break;
+            }
+            seq = xmas[i..j].to_vec();
+
+            if &seq.iter().sum::<usize>() >= &num {
+                break;
+            }
+        }
+
+        if &seq.iter().sum::<usize>() == &num {
+            break;
+        }
+    }
+
+    seq.sort();
+    seq.first().unwrap() + seq.last().unwrap()
 }
 
 static EXAMPLE_XMAS: &str = "35
@@ -56,7 +80,7 @@ mod tests {
         let expected = 127;
         let example_xmas = EXAMPLE_XMAS.lines().map(|l| l.parse().unwrap()).collect();
         let example_preamble_len = 5;
-        let actual = find_preamble_rule_invalid(example_xmas, example_preamble_len);
+        let actual = find_preamble_rule_invalid(&example_xmas, example_preamble_len);
 
         assert_eq!(actual, expected);
     }
@@ -67,7 +91,7 @@ mod tests {
 
         let xmas = load_as_vec_usize("day9");
         let preamble_len = 25;
-        let actual = find_preamble_rule_invalid(xmas, preamble_len);
+        let actual = find_preamble_rule_invalid(&xmas, preamble_len);
         println!(
             "{}{}",
             "First value that does not follow preamble rule: "
@@ -85,7 +109,23 @@ mod tests {
         let example_xmas = EXAMPLE_XMAS.lines().map(|l| l.parse().unwrap()).collect();
         let example_preamble_len = 5;
 
-        let actual = find_preamble_rule_sequence(example_xmas, example_preamble_len);
+        let actual = find_preamble_rule_sequence(&example_xmas, example_preamble_len);
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn find_preamble_rule_sequence_from_input() {
+        let expected = 28509180;
+
+        let xmas = load_as_vec_usize("day9");
+        let preamble_len = 25;
+        let actual = find_preamble_rule_sequence(&xmas, preamble_len);
+        println!(
+            "{}{}",
+            "Sum of min and max of sequence: ".green().bold(),
+            actual
+        );
 
         assert_eq!(actual, expected);
     }
