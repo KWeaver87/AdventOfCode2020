@@ -5,6 +5,7 @@ struct ProgramTracker {
     is_infinite_loop: bool,
 }
 
+/// Part1
 fn calc_acc_before_repeat(program: Vec<String>) -> i32 {
     let parsed_instructions = program
         .into_iter()
@@ -23,6 +24,50 @@ fn calc_acc_before_repeat(program: Vec<String>) -> i32 {
     run.accumulator
 }
 
+/// Part2
+fn calc_acc_reversing_nop_jmp(program: Vec<String>) -> i32 {
+    let parsed_instructions: Vec<(String, i32)> = program
+        .into_iter()
+        .map(|l| parse_instruction_line(l.to_string()))
+        .collect();
+
+    let indices_nop_jmp: Vec<usize> = parsed_instructions
+        .iter()
+        .enumerate()
+        .filter_map(|(i, instr)| match instr.0.as_str() {
+            "nop" | "jmp" => Some(i),
+            _ => None,
+        })
+        .collect();
+
+    indices_nop_jmp
+        .into_iter()
+        .find_map(|i| {
+            let mut instrs = parsed_instructions.clone();
+            instrs[i].0 = match instrs[i].0.as_str() {
+                "nop" => "jmp".to_string(),
+                "jmp" => "nop".to_string(),
+                _ => panic!("Should be only nop or jmp here"),
+            };
+
+            let init_tracker = ProgramTracker {
+                accumulator: 0,
+                instruction_index: 0,
+                is_infinite_loop: false,
+                seen_instructions: vec![],
+            };
+
+            let run = run_instruction(instrs, init_tracker);
+
+            if run.is_infinite_loop {
+                None
+            } else {
+                Some(run.accumulator)
+            }
+        })
+        .unwrap()
+}
+
 fn run_instruction(instructions: Vec<(String, i32)>, tracker: ProgramTracker) -> ProgramTracker {
     let index = tracker.instruction_index as usize;
     if tracker.seen_instructions.contains(&(index)) {
@@ -30,6 +75,9 @@ fn run_instruction(instructions: Vec<(String, i32)>, tracker: ProgramTracker) ->
             is_infinite_loop: true,
             ..tracker
         };
+    }
+    if index >= instructions.len() {
+        return tracker;
     }
 
     let next_run = determine_next_run(&instructions, tracker);
@@ -42,9 +90,10 @@ fn determine_next_run(
     prev_run: ProgramTracker,
 ) -> ProgramTracker {
     let index = prev_run.instruction_index as usize;
+
     let instruction = instructions[index].clone();
     let op = instruction.0.as_str();
-    let next_seen = prev_run
+    let next_seen_instr = prev_run
         .seen_instructions
         .iter()
         .chain([index].iter())
@@ -55,17 +104,17 @@ fn determine_next_run(
         "acc" => ProgramTracker {
             instruction_index: prev_run.instruction_index + 1,
             accumulator: prev_run.accumulator + instruction.1,
-            seen_instructions: next_seen,
+            seen_instructions: next_seen_instr,
             ..prev_run
         },
         "jmp" => ProgramTracker {
             instruction_index: prev_run.instruction_index + instruction.1,
-            seen_instructions: next_seen,
+            seen_instructions: next_seen_instr,
             ..prev_run
         },
         "nop" => ProgramTracker {
             instruction_index: prev_run.instruction_index + 1,
-            seen_instructions: next_seen,
+            seen_instructions: next_seen_instr,
             ..prev_run
         },
         _ => panic!(format!("Invalid operation: {}", op)),
@@ -97,10 +146,11 @@ mod tests {
     use colored::Colorize;
 
     #[test]
-    fn calc_acc_before_repeat_example_1() {
+    fn calc_acc_before_repeat_example() {
         let expected = 5;
-        let actual =
-            calc_acc_before_repeat(EXAMPLE_PROGRAM.lines().map(|l| l.to_string()).collect());
+
+        let program = EXAMPLE_PROGRAM.lines().map(|l| l.to_string()).collect();
+        let actual = calc_acc_before_repeat(program);
 
         assert_eq!(actual, expected);
     }
@@ -114,6 +164,31 @@ mod tests {
         println!(
             "{}{}",
             "Accumulator before an instruction repeats: ".green().bold(),
+            actual
+        );
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn calc_acc_reversing_nop_jmp_example() {
+        let expected = 8;
+
+        let program = EXAMPLE_PROGRAM.lines().map(|l| l.to_string()).collect();
+        let actual = calc_acc_reversing_nop_jmp(program);
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn calc_acc_reversing_nop_jmp_from_input() {
+        let expected = 703;
+
+        let program = load_as_vec_string("day8");
+        let actual = calc_acc_reversing_nop_jmp(program);
+        println!(
+            "{}{}",
+            "Accumulator after reversing nop and jmp: ".green().bold(),
             actual
         );
 
