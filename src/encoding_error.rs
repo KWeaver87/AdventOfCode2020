@@ -1,23 +1,28 @@
 fn find_preamble_rule_invalid(xmas: Vec<usize>, preamble_len: usize) -> usize {
-
-    xmas
-        .iter()
-        .skip(preamble_len)
+    xmas.iter()
         .enumerate()
+        .skip(preamble_len)
         .find(|(i, _)| !is_valid_by_preamble_rule(&xmas, *i, preamble_len))
         .map(|(_, &x)| x)
         .unwrap()
 }
 
 fn is_valid_by_preamble_rule(xmas: &Vec<usize>, i: usize, preamble_len: usize) -> bool {
+    let n = xmas[i];
+    let preamble = xmas[i - preamble_len..i].to_vec();
 
-    true
+    preamble.iter().any(|&x| {
+        preamble.iter().any(|&y| {
+            // println!("{} + {} = {} == {}? {}", x, y, x + y, n, x != y && x + y == n);
+            x != y && x + y == n
+        })
+    })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::input_utils::load_as_vec_string;
+    use crate::input_utils::load_as_vec_usize;
     use colored::Colorize;
 
     #[test]
@@ -48,6 +53,24 @@ mod tests {
         .collect();
         let example_preamble_len = 5;
         let actual = find_preamble_rule_invalid(example_xmas, example_preamble_len);
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn find_preamble_rule_invalid_from_input() {
+        let expected = 217430975;
+
+        let xmas = load_as_vec_usize("day9");
+        let preamble_len = 25;
+        let actual = find_preamble_rule_invalid(xmas, preamble_len);
+        println!(
+            "{}{}",
+            "First value that does not follow preamble rule: "
+                .green()
+                .bold(),
+            actual
+        );
 
         assert_eq!(actual, expected);
     }
