@@ -19,3 +19,4 @@ Files should be saved in `inputs\` folder, using a `dayX` format. Loading functi
 - [Day 6: Custom Customs](src/custom_customs.rs)
 - [Day 7: Handy Haversacks](src/handy_haversacks.rs)
 - [Day 8: Handheld Halting](src/handheld_halting.rs)
+- [Day 9: Encoding Error](src/encoding_error.rs)
