@@ -11,24 +11,20 @@ fn is_valid_by_preamble_rule(xmas: &Vec<usize>, i: usize, preamble_len: usize) -
     let n = xmas[i];
     let preamble = xmas[i - preamble_len..i].to_vec();
 
-    preamble.iter().any(|&x| {
-        preamble.iter().any(|&y| {
-            // println!("{} + {} = {} == {}? {}", x, y, x + y, n, x != y && x + y == n);
-            x != y && x + y == n
-        })
-    })
+    preamble
+        .iter()
+        .any(|&x| preamble.iter().any(|&y| x != y && x + y == n))
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::input_utils::load_as_vec_usize;
-    use colored::Colorize;
+/// Finds the first number that is invalid according to the preamble rule.
+/// Then searches for a seqeunce of numbers that sums up to the invalid number.
+/// Returns the sum of the min and max values from that sequence.
+fn find_preamble_rule_sequence(xmas: Vec<usize>, preamble_len: usize) -> usize {
 
-    #[test]
-    fn find_preamble_rule_invalid_example() {
-        let expected = 127;
-        let example_xmas = "35
+    0
+}
+
+static EXAMPLE_XMAS: &str = "35
 20
 15
 25
@@ -47,10 +43,18 @@ mod tests {
 299
 277
 309
-576"
-        .lines()
-        .map(|l| l.parse().unwrap())
-        .collect();
+576";
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::input_utils::load_as_vec_usize;
+    use colored::Colorize;
+
+    #[test]
+    fn find_preamble_rule_invalid_example() {
+        let expected = 127;
+        let example_xmas = EXAMPLE_XMAS.lines().map(|l| l.parse().unwrap()).collect();
         let example_preamble_len = 5;
         let actual = find_preamble_rule_invalid(example_xmas, example_preamble_len);
 
@@ -71,6 +75,17 @@ mod tests {
                 .bold(),
             actual
         );
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn find_preamble_rule_sequence_example() {
+        let expected = 62;
+        let example_xmas = EXAMPLE_XMAS.lines().map(|l| l.parse().unwrap()).collect();
+        let example_preamble_len = 5;
+
+        let actual = find_preamble_rule_sequence(example_xmas, example_preamble_len);
 
         assert_eq!(actual, expected);
     }
