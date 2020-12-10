@@ -10,3 +10,4 @@ mod custom_customs;
 mod handy_haversacks;
 mod handheld_halting;
 mod encoding_error;
+mod adapter_array;
