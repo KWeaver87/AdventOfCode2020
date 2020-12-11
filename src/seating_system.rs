@@ -35,14 +35,6 @@ impl SeatLayout {
         ]
     }
 
-    fn count_adjacent_occupied(&self, x: usize, y: usize) -> usize {
-        self.get_adjacent(x, y)
-            .into_iter()
-            .filter(|s| s.is_some())
-            .filter(|s| s.unwrap() == '#')
-            .count()
-    }
-
     fn count_total_occupied(&self) -> usize {
         self.layout
             .iter()
@@ -63,22 +55,33 @@ impl SeatLayout {
     }
 }
 
+/// Part1
 fn stabilized_occupied_seats(layout: Vec<String>) -> usize {
     let seats = SeatLayout::new(layout);
-    let stab_seats = run_seat_rules_until_stable(seats);
+    let adj_getter = |lay: &SeatLayout, x, y| { lay.get_adjacent(x, y) };
+    let stab_seats = run_seat_rules_until_stable(&seats, 4, adj_getter);
 
     stab_seats.count_total_occupied()
 }
 
-fn run_seat_rules_until_stable(layout: SeatLayout) -> SeatLayout {
+fn run_seat_rules_until_stable<F>(
+    layout: &SeatLayout,
+    occ_seat_limit: usize,
+    adj_getter: F,
+) -> SeatLayout
+where F: Fn(&SeatLayout, usize, usize) -> Vec<Option<char>> {
     let mut new_layout = layout.clone();
 
     for x in 0..layout.len_x() {
         for y in 0..layout.len_y() {
-            if layout.get(x, y) == 'L' && layout.count_adjacent_occupied(x, y) == 0 {
+            let c = layout.get(x, y);
+            let adj = adj_getter(&layout, x, y);
+            let occ_count = count_adjacent_occupied(adj);
+
+            if c == 'L' && occ_count == 0 {
                 new_layout.layout[x][y] = '#'
             }
-            if layout.get(x, y) == '#' && layout.count_adjacent_occupied(x, y) >= 4 {
+            if c == '#' && occ_count >= occ_seat_limit {
                 new_layout.layout[x][y] = 'L'
             }
         }
@@ -87,8 +90,21 @@ fn run_seat_rules_until_stable(layout: SeatLayout) -> SeatLayout {
     if new_layout.count_total_occupied() == layout.count_total_occupied() {
         new_layout
     } else {
-        run_seat_rules_until_stable(new_layout)
+        run_seat_rules_until_stable(&new_layout, occ_seat_limit, adj_getter)
     }
+}
+
+fn count_adjacent_occupied(adjacent: Vec<Option<char>>) -> usize {
+    adjacent
+        .into_iter()
+        .filter(|s| s.is_some())
+        .filter(|s| s.unwrap() == '#')
+        .count()
+}
+
+/// Part2
+fn stabilized_occupied_visible_seats(layout: Vec<String>) -> usize {
+    0
 }
 
 #[cfg(test)]
@@ -128,6 +144,15 @@ L.LLLLL.LL";
             "Total number of occupied seats: ".green().bold(),
             actual
         );
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn stabilized_occupied_visible_seats_example() {
+        let expected = 26;
+        let layout = EXAMPLE_LAYOUT.lines().map(|l| l.to_string()).collect();
+        let actual = stabilized_occupied_visible_seats(layout);
 
         assert_eq!(actual, expected);
     }
