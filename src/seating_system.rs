@@ -35,6 +35,31 @@ impl SeatLayout {
         ]
     }
 
+    fn get_adjacent_vis(&self, x: usize, y: usize) -> Vec<Option<char>> {
+        vec![
+            self.get_path(x, y, (-1, -1)),
+            self.get_path(x, y, (-1, 0)),
+            self.get_path(x, y, (-1, 1)),
+            self.get_path(x, y, (0, -1)),
+            self.get_path(x, y, (0, 1)),
+            self.get_path(x, y, (1, -1)),
+            self.get_path(x, y, (1, 0)),
+            self.get_path(x, y, (1, 1)),
+        ]
+    }
+
+    fn get_path(&self, x: usize, y: usize, path: (isize, isize)) -> Option<char> {
+        let x2 = x as isize + path.0;
+        let y2 = y as isize + path.1;
+        let got = self.get_checked(x2, y2);
+
+        match got {
+            None => None,
+            Some('.') => self.get_path(x2 as usize, y2 as usize, path),
+            _ => got,
+        }
+    }
+
     fn count_total_occupied(&self) -> usize {
         self.layout
             .iter()
@@ -58,7 +83,7 @@ impl SeatLayout {
 /// Part1
 fn stabilized_occupied_seats(layout: Vec<String>) -> usize {
     let seats = SeatLayout::new(layout);
-    let adj_getter = |lay: &SeatLayout, x, y| { lay.get_adjacent(x, y) };
+    let adj_getter = |lay: &SeatLayout, x, y| lay.get_adjacent(x, y);
     let stab_seats = run_seat_rules_until_stable(&seats, 4, adj_getter);
 
     stab_seats.count_total_occupied()
@@ -69,7 +94,9 @@ fn run_seat_rules_until_stable<F>(
     occ_seat_limit: usize,
     adj_getter: F,
 ) -> SeatLayout
-where F: Fn(&SeatLayout, usize, usize) -> Vec<Option<char>> {
+where
+    F: Fn(&SeatLayout, usize, usize) -> Vec<Option<char>>,
+{
     let mut new_layout = layout.clone();
 
     for x in 0..layout.len_x() {
@@ -104,7 +131,11 @@ fn count_adjacent_occupied(adjacent: Vec<Option<char>>) -> usize {
 
 /// Part2
 fn stabilized_occupied_visible_seats(layout: Vec<String>) -> usize {
-    0
+    let seats = SeatLayout::new(layout);
+    let adj_getter = |lay: &SeatLayout, x, y| lay.get_adjacent_vis(x, y);
+    let stab_seats = run_seat_rules_until_stable(&seats, 5, adj_getter);
+
+    stab_seats.count_total_occupied()
 }
 
 #[cfg(test)]
@@ -153,6 +184,21 @@ L.LLLLL.LL";
         let expected = 26;
         let layout = EXAMPLE_LAYOUT.lines().map(|l| l.to_string()).collect();
         let actual = stabilized_occupied_visible_seats(layout);
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn stabilized_occupied_visible_seats_from_input() {
+        let expected = 2068;
+
+        let layout = load_as_vec_string("day11");
+        let actual = stabilized_occupied_visible_seats(layout);
+        println!(
+            "{}{}",
+            "Total number of occupied visible seats: ".green().bold(),
+            actual
+        );
 
         assert_eq!(actual, expected);
     }
