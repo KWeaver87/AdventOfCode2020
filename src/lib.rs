@@ -12,3 +12,4 @@ mod handheld_halting;
 mod encoding_error;
 mod adapter_array;
 mod seating_system;
+mod rain_risk;
