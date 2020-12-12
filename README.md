@@ -21,3 +21,4 @@ Files should be saved in `inputs\` folder, using a `dayX` format. Loading functi
 - [Day 8: Handheld Halting](src/handheld_halting.rs)
 - [Day 9: Encoding Error](src/encoding_error.rs)
 - [Day 10: Adapter Array](src/adapter_array.rs)
+- [Day 11: Seating System](src/seating_system.rs)

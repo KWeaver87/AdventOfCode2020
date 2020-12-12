@@ -11,3 +11,4 @@ mod handy_haversacks;
 mod handheld_halting;
 mod encoding_error;
 mod adapter_array;
+mod seating_system;
