@@ -77,6 +77,7 @@ fn move_forward(instruction: (char, isize), position: FerryTracker) -> FerryTrac
     travel_direction((position.dir, instruction.1), position)
 }
 
+/// Part2
 fn distance_traveled_waypoint(nav_instructions: Vec<String>) -> usize {
     let parsed_nav: Vec<(char, isize)> = nav_instructions
         .into_iter()
@@ -96,7 +97,6 @@ fn distance_traveled_waypoint(nav_instructions: Vec<String>) -> usize {
     (end_pos.x.abs() + end_pos.y.abs()) as usize
 }
 
-/// Part2
 fn navigate_waypoint(nav_instructions: Vec<(char, isize)>, position: FerryTracker) -> FerryTracker {
     nav_instructions
         .into_iter()
