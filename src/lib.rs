@@ -13,3 +13,4 @@ mod encoding_error;
 mod adapter_array;
 mod seating_system;
 mod rain_risk;
+mod shuttle_search;
