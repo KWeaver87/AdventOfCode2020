@@ -1,35 +1,46 @@
+enum BusId {
+    Id(usize),
+    NoConstraintsId,
+}
+
 fn multiply_earliest_bus(schedule: String) -> usize {
     let (depart_time, parsed_sch) = parse_schedule(schedule);
+    let just_constrained_busses: Vec<usize> = parsed_sch
+        .into_iter()
+        .filter_map(|b| match b {
+            BusId::NoConstraintsId => None,
+            BusId::Id(id) => Some(id),
+        })
+        .collect();
 
-    let (time, bus) =
-        parsed_sch
-            .into_iter()
-            .fold((usize::MAX, 0 as usize), |(best_time, best_bus), bus| {
-                let time_till_next = bus - (depart_time % bus);
+    let (time, bus) = just_constrained_busses.into_iter().fold(
+        (usize::MAX, 0 as usize),
+        |(best_time, best_bus), bus| {
+            let time_till_next = bus - (depart_time % bus);
 
-                if time_till_next < best_time {
-                    (time_till_next, bus)
-                } else {
-                    (best_time, best_bus)
-                }
-            });
+            if time_till_next < best_time {
+                (time_till_next, bus)
+            } else {
+                (best_time, best_bus)
+            }
+        },
+    );
 
     time * bus
 }
 
-fn parse_schedule(schedule: String) -> (usize, Vec<usize>) {
+fn parse_schedule(schedule: String) -> (usize, Vec<BusId>) {
     let schedule_lines: Vec<&str> = schedule.lines().collect();
     let time = schedule_lines[0];
     let busses = schedule_lines[1];
 
-
     let bus_vec = busses
         .split(',')
-        .filter_map(|b| {
+        .map(|b| {
             if b == "x" {
-                None
+                BusId::NoConstraintsId
             } else {
-                Some(b.parse().unwrap())
+                BusId::Id(b.parse().unwrap())
             }
         })
         .collect();
@@ -40,7 +51,7 @@ fn parse_schedule(schedule: String) -> (usize, Vec<usize>) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::input_utils::{load_as_string};
+    use crate::input_utils::load_as_string;
     use colored::Colorize;
 
     static EXAMPLE_SCHEDULE: &str = "939
@@ -62,9 +73,7 @@ mod tests {
         let actual = multiply_earliest_bus(schedule);
         println!(
             "{}{}",
-            "Product of earliest bus wait time and ID: "
-                .green()
-                .bold(),
+            "Product of earliest bus wait time and ID: ".green().bold(),
             actual
         );
 
