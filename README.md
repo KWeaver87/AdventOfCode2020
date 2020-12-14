@@ -24,3 +24,4 @@ Files should be saved in `inputs\` folder, using a `dayX` format. [Loading funct
 - [Day 11: Seating System](src/seating_system.rs)
 - [Day 12: Rain Risk](src/rain_risk.rs)
 - [Day 13: Shuttle Search](src/shuttle_search.rs)
+- [Day 14: Docking Data](src/docking_data.rs)
