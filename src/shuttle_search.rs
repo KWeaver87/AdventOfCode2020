@@ -45,17 +45,13 @@ fn find_subsequent_time(schedule: String) -> u64 {
     let mut time = 0;
 
     for n in 1..(u64::MAX / *max_bus.1) {
-    // for n in 1..usize::MAX {
         time = (max_bus.1 * n) - max_bus.0 as u64;
-        // time = n;
-        // let mut sub_time = time + 1;
         if time % 1_000_000 == 0 {
             println!("Checking: {}", time);
         }
 
         let x = parsed_sch
             .iter()
-            // .skip(1)
             .try_fold(time, |sub_time, bus| match bus {
                 BusId::Id(id) => {
                     if sub_time % id == 0 {
@@ -70,21 +66,6 @@ fn find_subsequent_time(schedule: String) -> u64 {
         if x.is_ok() {
             break;
         }
-
-        // for bus in parsed_sch.iter().skip(1) {
-        //     match bus {
-        //         BusId::Id(id) => {
-        //             if sub_time % id == 0 {
-        //                 sub_time += 1;
-        //             } else {
-        //                 break;
-        //             }
-        //         }
-        //         BusId::NoConstraintsId => {
-        //             sub_time += 1;
-        //         }
-        //     }
-        // }
     }
 
     time
@@ -168,8 +149,9 @@ mod tests {
         }
     }
 
-    // Part2
-    #[test]
+    // Part2 - This probably works, but is absurdly slow, taking a day or
+    // longer to reach answer. So we don't want this running on `cargo test`.
+    // #[test]
     fn find_subsequent_time_from_input() {
         let expected = 0;
 
