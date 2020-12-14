@@ -7,7 +7,7 @@ I started off doing each day and part in its own branch. Typically end up rework
 
 ## Input files
 
-Files should be saved in `inputs\` folder, using a `dayX` format. Loading functions will accept `"dayX"` as a format. e.g., `"day4"` will load `inputs\day4`.
+Files should be saved in `inputs\` folder, using a `dayX` format. [Loading functions](src/input_utils.rs) will accept `"dayX"` as a format. e.g., `"day4"` will load `inputs\day4`.
 
 ## Puzzle Solutions
 
@@ -23,3 +23,4 @@ Files should be saved in `inputs\` folder, using a `dayX` format. Loading functi
 - [Day 10: Adapter Array](src/adapter_array.rs)
 - [Day 11: Seating System](src/seating_system.rs)
 - [Day 12: Rain Risk](src/rain_risk.rs)
+- [Day 13: Shuttle Search](src/shuttle_search.rs)
