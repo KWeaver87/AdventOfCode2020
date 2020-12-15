@@ -59,8 +59,7 @@ fn apply_bitmask(
     for (i, v) in mask_digits {
         binary_chars[i] = v
     }
-    let binary: String = binary_chars.iter().collect();
-    let a_v = (address, u64::from_str_radix(binary.as_str(), 2).unwrap());
+    let a_v = (address, binary_vec_to_int(binary_chars));
 
     vec![a_v]
 }
@@ -86,7 +85,37 @@ fn apply_bitmask_decoder(
     }
     let binary_address: String = binary_chars.iter().collect();
 
-    vec![(0, value)]
+    get_floating_addresses(binary_address, value)
+}
+
+fn get_floating_addresses(binary_address: String, value: u64) -> Vec<(MemAddress, MemValue)> {
+    let mut adds_to_check = vec![binary_address];
+    let mut finished_a_v: Vec<(MemAddress, MemValue)> = vec![];
+
+    while adds_to_check.len() > 0 {
+        let add = adds_to_check.pop().unwrap();
+        let add_chars: Vec<char> = add.chars().collect();
+        let x_index = add_chars.iter().position(|ch| *ch == 'X').unwrap();
+
+        for n in 0..=1 {
+            let mut new_add = add_chars.clone();
+            new_add[x_index] = n.to_string().chars().nth(0).unwrap();
+
+            if new_add.contains(&'X') {
+                adds_to_check.push(new_add.iter().collect());
+            } else {
+                let add_finished = binary_vec_to_int(new_add);
+                finished_a_v.push((add_finished as MemAddress, value));
+            }
+        }
+    }
+
+    finished_a_v
+}
+
+fn binary_vec_to_int(binary_chars: Vec<char>) -> u64 {
+    let binary: String = binary_chars.iter().collect();
+    u64::from_str_radix(binary.as_str(), 2).unwrap()
 }
 
 fn parse_program(raw_program: Vec<String>) -> Vec<Instruction> {
@@ -180,7 +209,16 @@ mem[8] = 0"
 
         let program = load_as_vec_string("day14");
         let actual = sum_memory(program);
-        println!("{}{}", "Sum of memory values: ".green().bold(), actual);
+        println!("{}{}", "Sum of memory values using mask against values: ".green().bold(), actual);
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn get_floating_addresses_test() {
+        let expected: Vec<(usize, u64)> = vec![(2, 1), (3, 1)];
+
+        let actual = get_floating_addresses("1X".to_string(), 1);
 
         assert_eq!(actual, expected);
     }
@@ -197,6 +235,24 @@ mem[26] = 1"
             .collect();
 
         let actual = sum_memory_decoder(program);
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    // Part1
+    fn sum_memory_decoder_input() {
+        let expected = 4288986482164;
+
+        let program = load_as_vec_string("day14");
+        let actual = sum_memory_decoder(program);
+        println!(
+            "{}{}",
+            "Sum of memory values using mask as memory address decoder: "
+                .green()
+                .bold(),
+            actual
+        );
+
         assert_eq!(actual, expected);
     }
 }
