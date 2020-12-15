@@ -10,7 +10,17 @@ enum Instruction {
     Mem(MemAddress, MemValue),
 }
 
+/// Part1
 fn sum_memory(raw_program: Vec<String>) -> u64 {
+    let memory = program_into_memory(raw_program, |mask, a, v| apply_bitmask(mask, a, v));
+
+    memory.into_iter().map(|(_, v)| v).sum()
+}
+
+fn program_into_memory<F>(raw_program: Vec<String>, mem_map: F) -> HashMap<usize, u64>
+where
+    F: Fn(&BitMask, MemAddress, MemValue) -> Vec<(MemAddress, MemValue)>,
+{
     let program = parse_program(raw_program);
 
     let mut memory: HashMap<usize, u64> = HashMap::new();
@@ -20,15 +30,22 @@ fn sum_memory(raw_program: Vec<String>) -> u64 {
         match instr {
             Instruction::Mask(new_mask) => mask = new_mask,
             Instruction::Mem(address, value) => {
-                memory.insert(address, apply_bitmask(&mask, value));
+                let mapped_a_v = mem_map(&mask, address, value);
+                for a_v in mapped_a_v {
+                    memory.insert(a_v.0, a_v.1);
+                }
             }
         }
     }
 
-    memory.into_iter().map(|(_, v)| v).sum()
+    memory
 }
 
-fn apply_bitmask(mask: &BitMask, value: u64) -> u64 {
+fn apply_bitmask(
+    mask: &BitMask,
+    address: MemAddress,
+    value: MemValue,
+) -> Vec<(MemAddress, MemValue)> {
     let mut binary_chars: Vec<char> = format!("{:036b}", value).chars().collect();
     let mask_digits: Vec<(usize, char)> = mask
         .iter()
@@ -43,8 +60,33 @@ fn apply_bitmask(mask: &BitMask, value: u64) -> u64 {
         binary_chars[i] = v
     }
     let binary: String = binary_chars.iter().collect();
+    let a_v = (address, u64::from_str_radix(binary.as_str(), 2).unwrap());
 
-    u64::from_str_radix(binary.as_str(), 2).unwrap()
+    vec![a_v]
+}
+
+fn sum_memory_decoder(raw_program: Vec<String>) -> u64 {
+    let memory = program_into_memory(raw_program, |mask, a, v| apply_bitmask_decoder(mask, a, v));
+
+    memory.into_iter().map(|(_, v)| v).sum()
+}
+
+fn apply_bitmask_decoder(
+    mask: &BitMask,
+    address: MemAddress,
+    value: MemValue,
+) -> Vec<(MemAddress, MemValue)> {
+    let mut binary_chars: Vec<char> = format!("{:036b}", address).chars().collect();
+
+    for (i, v) in mask.iter().enumerate() {
+        match *v {
+            '0' => continue,
+            _ => binary_chars[i] = *v,
+        }
+    }
+    let binary_address: String = binary_chars.iter().collect();
+
+    vec![(0, value)]
 }
 
 fn parse_program(raw_program: Vec<String>) -> Vec<Instruction> {
@@ -111,26 +153,28 @@ mod tests {
             'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', '1', 'X', 'X', 'X', 'X',
             '0', 'X',
         ];
-        let actual = apply_bitmask(&mask, 11);
+        let actual = apply_bitmask(&mask, 0, 11)[0].1;
 
         assert_eq!(actual, expected);
     }
 
-    static EXAMPLE_PROGRAM: &str = "mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
-mem[8] = 11
-mem[7] = 101
-mem[8] = 0";
-
     #[test]
     fn sum_memory_example() {
         let expected = 165;
-        let prog = EXAMPLE_PROGRAM.lines().map(|s| s.to_string()).collect();
+        let prog = "mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
+mem[8] = 11
+mem[7] = 101
+mem[8] = 0"
+            .lines()
+            .map(|s| s.to_string())
+            .collect();
         let actual = sum_memory(prog);
 
         assert_eq!(actual, expected);
     }
 
     #[test]
+    // Part1
     fn sum_memory_from_input() {
         let expected = 6386593869035;
 
@@ -138,6 +182,21 @@ mem[8] = 0";
         let actual = sum_memory(program);
         println!("{}{}", "Sum of memory values: ".green().bold(), actual);
 
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn sum_memory_decoder_example() {
+        let expected = 208;
+        let program = "mask = 000000000000000000000000000000X1001X
+mem[42] = 100
+mask = 00000000000000000000000000000000X0XX
+mem[26] = 1"
+            .lines()
+            .map(|s| s.to_string())
+            .collect();
+
+        let actual = sum_memory_decoder(program);
         assert_eq!(actual, expected);
     }
 }
