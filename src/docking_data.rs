@@ -1,8 +1,6 @@
 use std::{collections::HashMap, vec};
 
-type MaskIndex = usize;
-type MaskBit = bool;
-type BitMask = Vec<(MaskIndex, MaskBit)>;
+type BitMask = Vec<char>;
 type MemAddress = usize;
 type MemValue = u64;
 
@@ -31,14 +29,22 @@ fn sum_memory(raw_program: Vec<String>) -> u64 {
 }
 
 fn apply_bitmask(mask: &BitMask, value: u64) -> u64 {
-    let mut new_value: Vec<char> = format!("{:036b}", value).chars().collect();
+    let mut binary_chars: Vec<char> = format!("{:036b}", value).chars().collect();
+    let mask_digits: Vec<(usize, char)> = mask
+        .iter()
+        .enumerate()
+        .filter_map(|(i, v)| match *v {
+            'X' => None,
+            _ => Some((i, *v)),
+        })
+        .collect();
 
-    for (i, v) in mask {
-        new_value[*i] = (*v as u8).to_string().chars().nth(0).unwrap();
+    for (i, v) in mask_digits {
+        binary_chars[i] = v
     }
-    let out = new_value.iter().collect::<String>();
+    let binary: String = binary_chars.iter().collect();
 
-    u64::from_str_radix(out.as_str(), 2).unwrap()
+    u64::from_str_radix(binary.as_str(), 2).unwrap()
 }
 
 fn parse_program(raw_program: Vec<String>) -> Vec<Instruction> {
@@ -68,16 +74,7 @@ fn parse_mem(instr: String) -> Instruction {
 fn parse_mask(instr: String) -> Instruction {
     let split_i = instr.find("=").unwrap() + 2;
     let (_, instr_mask) = instr.split_at(split_i);
-    let mask: Vec<(MaskIndex, MaskBit)> = instr_mask
-        .chars()
-        .enumerate()
-        .filter_map(|(i, ch)| match ch {
-            'X' => None,
-            '0' => Some((i, false)),
-            '1' => Some((i, true)),
-            _ => panic!("Invalid bitmask character"),
-        })
-        .collect();
+    let mask: Vec<char> = instr_mask.chars().collect();
 
     Instruction::Mask(mask)
 }
@@ -90,7 +87,7 @@ mod tests {
 
     #[test]
     fn parse_mask_test() {
-        let expected = Instruction::Mask(vec![(1, true), (4, false)]);
+        let expected = Instruction::Mask(vec!['X', '1', 'X', 'X', '0', 'X', 'X']);
         let mask = "mask = X1XX0XX".to_string();
         let actual = parse_mask(mask);
 
@@ -109,7 +106,11 @@ mod tests {
     #[test]
     fn apply_bitmask_test() {
         let expected = 73;
-        let mask = vec![(29, true), (34, false)];
+        let mask = vec![
+            'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X',
+            'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', '1', 'X', 'X', 'X', 'X',
+            '0', 'X',
+        ];
         let actual = apply_bitmask(&mask, 11);
 
         assert_eq!(actual, expected);
