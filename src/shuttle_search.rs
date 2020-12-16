@@ -153,7 +153,7 @@ mod tests {
     // longer to reach answer. So we don't want this running on `cargo test`.
     // #[test]
     fn find_subsequent_time_from_input() {
-        let expected = 0;
+        let expected = 939490236001473;
 
         let schedule = load_as_string("day13");
         let actual = find_subsequent_time(schedule);
