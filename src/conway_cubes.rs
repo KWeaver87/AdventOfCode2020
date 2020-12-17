@@ -22,6 +22,7 @@ struct CubeMinMax {
     z: MinMax,
 }
 
+/// Part1
 fn active_cubes_after_boot(initial_cubes: Vec<String>) -> usize {
     let boot_runs = 6;
     let active_cubes_map = parse_cubes(initial_cubes);
@@ -45,7 +46,7 @@ fn run_cycles(cube_map: CubeMap, boot_runs: usize) -> CubeMap {
                 let neighbors = get_neighbors(&pos);
                 let active_neighbor_count = neighbors
                     .into_iter()
-                    .filter(|pos| cube_map.contains(pos))
+                    .filter(|p| cube_map.contains(p))
                     .count();
 
                 if active_neighbor_count == 3 {
