@@ -26,3 +26,4 @@ Files should be saved in `inputs\` folder, using a `dayX` format. [Loading funct
 - [Day 13: Shuttle Search](src/shuttle_search.rs)
 - [Day 14: Docking Data](src/docking_data.rs)
 - [Day 15: Rambunctious Recitation](src/rambunctious_recitation.rs)
+- [Day 16: Ticket Translation](src/ticket_translation.rs)
