@@ -1,4 +1,6 @@
-#[derive(PartialEq, Debug)]
+use std::collections::HashSet;
+
+#[derive(PartialEq, Debug, Clone)]
 struct Tickets {
     rules: Vec<TicketRule>,
     your_ticket: Vec<usize>,
@@ -8,13 +10,14 @@ struct Tickets {
 // A Vec of (low, high) ranges
 type Ranges = Vec<(usize, usize)>;
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 struct TicketRule {
     name: String,
     column: Option<u8>,
     ranges: Ranges,
 }
 
+/// Part1
 fn ticket_error_rate(raw_tickets: String) -> usize {
     let tickets = parse_tickets(raw_tickets);
 
@@ -59,6 +62,96 @@ fn combine_ranges(tickets: &Tickets) -> Ranges {
 
             ranges
         })
+}
+
+/// Returns a new Tickets, removing invalid tickets and mapping the rule.column fields
+fn map_columns(tickets: &Tickets) -> Tickets {
+    let valid_tickets = filter_valid_tickets(&tickets);
+    let mut columns: Vec<(Vec<usize>, usize)> = vec![];
+
+    for i in 0..tickets.your_ticket.len() {
+        columns.push((valid_tickets.iter().map(|tic| tic[i]).collect(), i));
+    }
+
+    let mut mapped_rules: Vec<TicketRule> = vec![];
+    let mut used_rules: HashSet<String> = HashSet::new();
+
+    while columns.len() > 0 {
+        let column = columns.pop().unwrap();
+        let matching_rules: Vec<&TicketRule> = tickets
+            .rules
+            .iter()
+            .filter(|rule| !used_rules.contains(&rule.name))
+            .filter(|rule| {
+                column.0.iter().all(|field| {
+                    rule.ranges
+                        .iter()
+                        .any(|range| *field >= range.0 && *field <= range.1)
+                })
+            })
+            .collect();
+
+        if matching_rules.len() == 1 {
+            let rule = matching_rules[0];
+            used_rules.insert(rule.name.clone());
+            mapped_rules.push(TicketRule {
+                column: Some(column.1 as u8),
+                ..rule.clone()
+            });
+        } else {
+            columns.insert(0, column);
+        }
+    }
+
+    let nearby_tickets = valid_tickets
+        .into_iter()
+        .filter(|tic| *tic != tickets.your_ticket)
+        .collect();
+    Tickets {
+        rules: mapped_rules,
+        nearby_tickets: nearby_tickets,
+        ..tickets.clone()
+    }
+}
+
+fn filter_valid_tickets(tickets: &Tickets) -> Vec<Vec<usize>> {
+    let combined_ranges = combine_ranges(&tickets);
+
+    let mut valid_tickets: Vec<Vec<usize>> = tickets
+        .nearby_tickets
+        .iter()
+        .filter(|ticket| {
+            ticket.iter().all(|field| {
+                combined_ranges
+                    .iter()
+                    .any(|range| *field >= range.0 && *field <= range.1)
+            })
+        })
+        .map(|tic| tic.clone())
+        .collect();
+
+    valid_tickets.push(tickets.your_ticket.clone());
+    valid_tickets
+}
+
+/// Part2
+fn product_departure(raw_tickets: String) -> usize {
+    let tickets = parse_tickets(raw_tickets);
+
+    let tickets_with_columns = map_columns(&tickets);
+
+    let departure_rules: Vec<TicketRule> = tickets_with_columns
+        .rules
+        .into_iter()
+        .filter(|rule| rule.name.starts_with("departure"))
+        .collect();
+
+    let departure_fields: Vec<usize> = departure_rules
+        .iter()
+        .map(|rule| tickets.your_ticket[rule.column.unwrap() as usize])
+        .collect();
+
+    departure_fields.iter().product()
 }
 
 fn parse_tickets(raw_tickets: String) -> Tickets {
@@ -215,6 +308,7 @@ nearby tickets:
         assert_eq!(actual, expected);
     }
 
+    // Part1
     #[test]
     fn ticket_error_rate_from_input() {
         let expected = 28884;
@@ -222,6 +316,69 @@ nearby tickets:
         let tickets = load_as_string("day16");
         let actual = ticket_error_rate(tickets);
         println!("{}{}", "Sum of invalid numbers: ".green().bold(), actual);
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn map_columns_test() {
+        let tickets = Tickets {
+            rules: vec![
+                TicketRule {
+                    name: "class".to_string(),
+                    column: None,
+                    ranges: vec![(0, 1), (4, 19)],
+                },
+                TicketRule {
+                    name: "row".to_string(),
+                    column: None,
+                    ranges: vec![(0, 5), (8, 19)],
+                },
+                TicketRule {
+                    name: "seat".to_string(),
+                    column: None,
+                    ranges: vec![(0, 13), (16, 19)],
+                },
+            ],
+            your_ticket: vec![11, 12, 13],
+            nearby_tickets: vec![vec![3, 9, 18], vec![15, 1, 5], vec![5, 14, 9]],
+        };
+        let mut expected = tickets.clone();
+        let actual = map_columns(&tickets);
+        expected.rules[0].column = Some(1);
+        expected.rules[1].column = Some(0);
+        expected.rules[2].column = Some(2);
+
+        expected
+            .rules
+            .sort_by(|a, b| a.column.unwrap().cmp(&b.column.unwrap()));
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn filter_valid_tickets_test() {
+        let expected: Vec<Vec<usize>> = vec![vec![7, 3, 47], vec![7, 1, 14]];
+        let tickets = parse_tickets(EXAMPLE_TICKET.to_string());
+        let actual = filter_valid_tickets(&tickets);
+
+        assert_eq!(actual, expected);
+    }
+
+    // Part2
+    #[test]
+    fn product_departure_from_input() {
+        let expected = 1001849322119;
+
+        let tickets = load_as_string("day16");
+        let actual = product_departure(tickets);
+        println!(
+            "{}{}",
+            "Product of your ticket fields that start with \"departure\": "
+                .green()
+                .bold(),
+            actual
+        );
 
         assert_eq!(actual, expected);
     }
