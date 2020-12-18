@@ -29,38 +29,18 @@ mod tests {
     }
 
     #[test]
-    fn sum_homework_example_3() {
-        let expected = 26;
-        let homework = vec!["2 * 3 + (4 * 5)".to_string()];
-        let actual = sum_homework(homework);
+    fn sum_homework_other_examples() {
+        let examples = vec![
+            (26, "2 * 3 + (4 * 5)"),
+            (437, "5 + (8 * 3 + 9 + 3 * 4 * 3)"),
+            (12240, "5 * 9 * (7 * 3 * 3 + 9 * 3 + (8 + 6 * 4))"),
+            (13632, "((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2"),
+        ];
 
-        assert_eq!(actual, expected);
-    }
+        for (expected, example) in examples {
+            let actual = sum_homework(vec![example.to_string()]);
 
-    #[test]
-    fn sum_homework_example_4() {
-        let expected = 437;
-        let homework = vec!["5 + (8 * 3 + 9 + 3 * 4 * 3)".to_string()];
-        let actual = sum_homework(homework);
-
-        assert_eq!(actual, expected);
-    }
-
-    #[test]
-    fn sum_homework_example_5() {
-        let expected = 12240;
-        let homework = vec!["5 * 9 * (7 * 3 * 3 + 9 * 3 + (8 + 6 * 4))".to_string()];
-        let actual = sum_homework(homework);
-
-        assert_eq!(actual, expected);
-    }
-
-    #[test]
-    fn sum_homework_example_6() {
-        let expected = 13632;
-        let homework = vec!["((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2".to_string()];
-        let actual = sum_homework(homework);
-
-        assert_eq!(actual, expected);
+            assert_eq!(actual, expected);
+        }
     }
 }
