@@ -18,3 +18,4 @@ mod docking_data;
 mod rambunctious_recitation;
 mod ticket_translation;
 mod conway_cubes;
+mod conway_cubes_4d;

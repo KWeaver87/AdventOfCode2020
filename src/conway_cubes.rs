@@ -1,18 +1,18 @@
 use std::collections::{BTreeSet, HashSet};
 
-type CubeMap = HashSet<CubePos>;
+pub type CubeMap = HashSet<CubePos>;
 
 #[derive(PartialEq, Eq, Clone, Hash, Debug)]
-struct CubePos {
-    x: isize,
-    y: isize,
-    z: isize,
+pub struct CubePos {
+    pub x: isize,
+    pub y: isize,
+    pub z: isize,
 }
 
 #[derive(PartialEq, Eq, Debug)]
-struct MinMax {
-    min: isize,
-    max: isize,
+pub struct MinMax {
+    pub min: isize,
+    pub max: isize,
 }
 
 #[derive(PartialEq, Eq, Debug)]
@@ -108,7 +108,7 @@ fn get_min_max(cube_map: &HashSet<CubePos>) -> CubeMinMax {
     }
 }
 
-fn parse_cubes(initial_cubes: Vec<String>) -> HashSet<CubePos> {
+pub fn parse_cubes(initial_cubes: Vec<String>) -> HashSet<CubePos> {
     initial_cubes
         .iter()
         .enumerate()
