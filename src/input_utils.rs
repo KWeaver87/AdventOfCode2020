@@ -16,7 +16,7 @@ pub fn load_as_vec_usize(input_name: &str) -> Vec<usize> {
 /// Loads an input file as a `Vec<String>`
 /// Formatted as `dayX`, e.g. `day1`
 pub fn load_as_vec_string(input_name: &str) -> Vec<String> {
-    load_as_string(input_name).lines().map(|s| s.into()).collect()
+    mutliline_to_vec_string(load_as_string(input_name))
 }
 
 /// Loads an input file as a `String`
@@ -26,4 +26,9 @@ pub fn load_as_string(input_name: &str) -> String {
     path.push("inputs");
     path.push(input_name);
     fs::read_to_string(&path).expect(&path.to_str().unwrap())
+}
+
+/// Splits a String by lines into Vec<String>
+pub fn mutliline_to_vec_string(input: String) -> Vec<String> {
+    input.lines().map(|s| s.into()).collect()
 }
