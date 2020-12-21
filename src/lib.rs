@@ -20,3 +20,4 @@ mod ticket_translation;
 mod conway_cubes;
 mod conway_cubes_4d;
 mod monster_messages;
+mod jurassic_jigsaw;

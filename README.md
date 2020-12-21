@@ -29,3 +29,4 @@ Files should be saved in `inputs\` folder, using a `dayX` format. [Loading funct
 - [Day 16: Ticket Translation](src/ticket_translation.rs)
 - [Day 17: Conway Cubes](src/conway_cubes.rs)
 - [Day 19: Monster Messages](src/monster_messages.rs)
+- [Day 20: Jurassic Jigsaw](src/jurassic_jigsaw.rs)
