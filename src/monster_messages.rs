@@ -15,10 +15,14 @@ enum Rule {
 
 type Rules = HashMap<usize, Rule>;
 
+/// Part1
 fn count_messages_match(raw_messages: String) -> usize {
     let (rules, messages) = parse_messages(raw_messages);
 
-    let valid_messages: HashSet<String> = build_valid_messages(&rules, 0).into_iter().collect();
+    let max_size = messages.iter().map(|m| m.len()).max().unwrap();
+    let valid_messages: HashSet<String> = build_valid_messages(&rules, 0, max_size)
+        .into_iter()
+        .collect();
 
     messages
         .into_iter()
@@ -26,33 +30,70 @@ fn count_messages_match(raw_messages: String) -> usize {
         .count()
 }
 
-fn build_valid_messages(rules: &Rules, i: usize) -> Vec<String> {
+fn build_valid_messages(rules: &Rules, i: usize, size: usize) -> Vec<String> {
     let rule = rules.get(&i).unwrap().clone();
 
     match rule {
         Rule::SingleChar(c) => vec![c.to_string()],
-        Rule::Simple(subrules) => map_subrules(&rules, subrules),
+        Rule::Simple(subrules) => map_subrules(&rules, subrules, size),
         Rule::RuleOr(rule_or) => {
-            let left = map_subrules(rules, rule_or.left);
-            let right = map_subrules(rules, rule_or.right);
+            let left = map_subrules(rules, rule_or.left, size);
+            let right = map_subrules(rules, rule_or.right, size);
 
             left.iter().chain(right.iter()).map(|s| s.clone()).collect()
         }
     }
 }
 
-fn map_subrules(rules: &Rules, subrules: Vec<usize>) -> Vec<String> {
+fn map_subrules(rules: &Rules, subrules: Vec<usize>, size: usize) -> Vec<String> {
     subrules.iter().fold(vec![], |acc, j| {
-        let cur_rule = build_valid_messages(&rules, *j);
+        let cur_rule = build_valid_messages(&rules, *j, size);
 
         if acc.len() == 0 {
             cur_rule
         } else {
             acc.iter()
-                .flat_map(|a| cur_rule.iter().map(move |b| format!("{}{}", a, b)))
+                .filter(|a| a.len() <= size)
+                .flat_map(|a| {
+                    cur_rule
+                        .iter()
+                        .filter(|b| b.len() <= size)
+                        .map(move |b| format!("{}{}", a, b))
+                })
                 .collect()
         }
     })
+}
+
+/// Part2
+fn count_messages_match_new_rules(raw_messages: String) -> usize {
+    let (rules, messages) = parse_messages(raw_messages);
+    let mut new_rules = rules.clone();
+    new_rules.insert(
+        8,
+        Rule::RuleOr(RuleOr {
+            left: vec![42],
+            right: vec![42, 8],
+        }),
+    );
+    new_rules.insert(
+        11,
+        Rule::RuleOr(RuleOr {
+            left: vec![42, 31],
+            right: vec![42, 11, 31],
+        }),
+    );
+
+    let max_size = messages.iter().map(|m| m.len()).max().unwrap();
+
+    let valid_messages: HashSet<String> = build_valid_messages(&new_rules, 0, max_size)
+        .into_iter()
+        .collect();
+
+    messages
+        .into_iter()
+        .filter(|m| valid_messages.contains(m))
+        .count()
 }
 
 fn parse_messages(raw_messages: String) -> (Rules, Vec<String>) {
@@ -136,7 +177,7 @@ aaaabbb";
         let expected = vec!["a".to_string()];
         let mut rules: Rules = HashMap::new();
         rules.insert(0, Rule::SingleChar('a'));
-        let actual = build_valid_messages(&rules, 0);
+        let actual = build_valid_messages(&rules, 0, 5);
 
         assert_eq!(actual, expected);
     }
@@ -147,7 +188,7 @@ aaaabbb";
         let mut rules: Rules = HashMap::new();
         rules.insert(0, Rule::Simple(vec![1, 1]));
         rules.insert(1, Rule::SingleChar('a'));
-        let actual = build_valid_messages(&rules, 0);
+        let actual = build_valid_messages(&rules, 0, 5);
 
         assert_eq!(actual, expected);
     }
@@ -165,12 +206,13 @@ aaaabbb";
         );
         rules.insert(1, Rule::SingleChar('a'));
         rules.insert(2, Rule::SingleChar('b'));
-        let actual = build_valid_messages(&rules, 0);
+        let actual = build_valid_messages(&rules, 0, 5);
 
         assert_eq!(actual, expected);
     }
 
     #[test]
+    // Part1
     fn count_messages_match_from_input() {
         let expected = 210;
 
@@ -179,6 +221,22 @@ aaaabbb";
         println!(
             "{}{}",
             "Number of messages that match rule 0: ".green().bold(),
+            actual
+        );
+
+        assert_eq!(actual, expected);
+    }
+
+    // #[test]
+    // Part2 - Attempt at making work, but new rules cause a stack overflow
+    fn count_messages_match_new_rules_from_input() {
+        let expected = 0;
+
+        let messages = load_as_string("day19");
+        let actual = count_messages_match_new_rules(messages);
+        println!(
+            "{}{}",
+            "Number of messages that match rule 0 (with new rules): ".green().bold(),
             actual
         );
 
