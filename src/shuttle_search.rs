@@ -50,18 +50,16 @@ fn find_subsequent_time(schedule: String) -> u64 {
             println!("Checking: {}", time);
         }
 
-        let x = parsed_sch
-            .iter()
-            .try_fold(time, |sub_time, bus| match bus {
-                BusId::Id(id) => {
-                    if sub_time % id == 0 {
-                        Ok(sub_time + 1)
-                    } else {
-                        Err(())
-                    }
+        let x = parsed_sch.iter().try_fold(time, |sub_time, bus| match bus {
+            BusId::Id(id) => {
+                if sub_time % id == 0 {
+                    Ok(sub_time + 1)
+                } else {
+                    Err(())
                 }
-                BusId::NoConstraintsId => Ok(sub_time + 1),
-            });
+            }
+            BusId::NoConstraintsId => Ok(sub_time + 1),
+        });
 
         if x.is_ok() {
             break;

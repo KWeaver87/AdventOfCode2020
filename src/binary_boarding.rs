@@ -24,9 +24,7 @@ fn find_my_seat(input: Vec<String>) -> usize {
         .map(|s| *s)
         .collect();
 
-    *my_seat
-        .get(0)
-        .unwrap()
+    *my_seat.get(0).unwrap()
 }
 
 fn calc_seat_max_id(input: Vec<String>) -> usize {

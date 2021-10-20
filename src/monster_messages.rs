@@ -236,7 +236,9 @@ aaaabbb";
         let actual = count_messages_match_new_rules(messages);
         println!(
             "{}{}",
-            "Number of messages that match rule 0 (with new rules): ".green().bold(),
+            "Number of messages that match rule 0 (with new rules): "
+                .green()
+                .bold(),
             actual
         );
 

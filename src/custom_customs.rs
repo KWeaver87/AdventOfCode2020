@@ -78,9 +78,7 @@ mod tests {
         let actual = sum_group_questions_anyone(questions);
         println!(
             "{}{}",
-            "Sum of groups where anyone answered yes: "
-                .green()
-                .bold(),
+            "Sum of groups where anyone answered yes: ".green().bold(),
             actual
         );
 
@@ -103,9 +101,7 @@ mod tests {
         let actual = sum_group_questions_everyone(questions);
         println!(
             "{}{}",
-            "Sum of groups where everyone answered yes: "
-                .green()
-                .bold(),
+            "Sum of groups where everyone answered yes: ".green().bold(),
             actual
         );
 

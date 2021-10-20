@@ -41,7 +41,12 @@ fn run_cycles_4d(cube_map: CubeMap4d, boot_runs: usize) -> CubeMap4d {
         for y in min_maxes.y.min - 1..=min_maxes.y.max + 1 {
             for z in min_maxes.z.min - 1..=min_maxes.z.max + 1 {
                 for w in min_maxes.w.min - 1..=min_maxes.w.max + 1 {
-                    let pos = CubePos4d { x: x, y: y, z: z, w: w, };
+                    let pos = CubePos4d {
+                        x: x,
+                        y: y,
+                        z: z,
+                        w: w,
+                    };
                     let neighbors = get_neighbors_4d(&pos);
                     let active_neighbor_count = neighbors
                         .into_iter()
@@ -68,7 +73,12 @@ fn get_neighbors_4d(pos: &CubePos4d) -> Vec<CubePos4d> {
         for y in (pos.y - 1)..=(pos.y + 1) {
             for z in (pos.z - 1)..=(pos.z + 1) {
                 for w in (pos.w - 1)..=(pos.w + 1) {
-                neighbors.push(CubePos4d { x: x, y: y, z: z, w: w });
+                    neighbors.push(CubePos4d {
+                        x: x,
+                        y: y,
+                        z: z,
+                        w: w,
+                    });
                 }
             }
         }

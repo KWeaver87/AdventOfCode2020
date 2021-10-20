@@ -209,7 +209,13 @@ mem[8] = 0"
 
         let program = load_as_vec_string("day14");
         let actual = sum_memory(program);
-        println!("{}{}", "Sum of memory values using mask against values: ".green().bold(), actual);
+        println!(
+            "{}{}",
+            "Sum of memory values using mask against values: "
+                .green()
+                .bold(),
+            actual
+        );
 
         assert_eq!(actual, expected);
     }
