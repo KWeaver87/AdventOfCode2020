@@ -117,7 +117,7 @@ fn determine_next_run(
             seen_instructions: next_seen_instr,
             ..prev_run
         },
-        _ => panic!(format!("Invalid operation: {}", op)),
+        _ => panic!("Invalid operation: {}", op),
     }
 }
 

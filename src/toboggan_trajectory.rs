@@ -28,11 +28,7 @@ fn parse_geology_type(ch: char) -> usize {
     match ch {
         '.' => 0,
         '#' => 1,
-        _ => panic!(format!(
-            "{}{}",
-            "Unknown character for GeologyType: ".red(),
-            ch
-        )),
+        _ => panic!("{}{}", "Unknown character for GeologyType: ".red(), ch),
     }
 }
 
